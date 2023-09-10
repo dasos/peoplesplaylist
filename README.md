@@ -1,5 +1,5 @@
 
-# peoplesplaylist
+# The People's Playlist
 
 The Peoples Playlist is a Python3 web app that controls a Spotify player. It is used at a party, to give the people there a little bit of control over the playlist. In short, it lets those people, at specific points, decide if the next track is to be played or skipped.
 
@@ -15,7 +15,7 @@ The Peoples Playlist is a Python3 web app that controls a Spotify player. It is 
 
 ## How does it work?
 
-It used flask-socketio to allow for instant updates between server and client. At this point, websockets aren't actually used, but it may in the future.
+It used flask-socketio to allow for instant updates between server and client. At this point, I'm not certain that websockets are actually used, but they may in the future. :)
 
 ## Get it running
 

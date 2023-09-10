@@ -14,6 +14,7 @@ watcher_thread = None
 thread_lock = Lock()
 watcher_lock = Lock()
 
+
 @socketio.event
 def connect():
     global watcher_thread
