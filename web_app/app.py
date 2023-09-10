@@ -17,7 +17,7 @@ def create_app():
     app.config.from_prefixed_env()
 
     # Always get the defaults
-    # app.config.from_pyfile("../default_config.py")
+    app.config.from_pyfile("../default_config.py")
 
     # Overwrite with others if needed
     # if app.config.get("DEBUG"):

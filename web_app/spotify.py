@@ -60,10 +60,15 @@ def get_spotify():
         return spotify
 
     auth_manager = spotipy.oauth2.SpotifyOAuth()
-    if not auth_manager.validate_token(cache_handler.get_cached_token()):
-        logger.debug("Not logged in")
-        return
-
+    try:
+      if not auth_manager.validate_token(cache_handler.get_cached_token()):
+          logger.debug("Not logged in")
+          return None
+    except Exception as e:
+      logger.error("Exception when trying to auth")
+      logger.error(e)
+      return None
+      
     spotify = spotipy.Spotify(auth_manager=auth_manager)
 
     return spotify
