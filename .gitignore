@@ -1,0 +1,9 @@
+delete/
+input/
+output/
+more/
+**/__pycache__
+.coverage
+htmlcov
+.DS_Store
+venv

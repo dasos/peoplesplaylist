@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+	<div class="row">
+		<div class="col-10">
+			<h1>{% block title %} The People's Playlist {% endblock %}</h1>
+		</div>
+		<div class="col-2 text-right">
+			<span id="status-connected" style="display: none">
+				<i class="fas fa-link"></i>
+			</span>
+			<span id="status-not-connected">
+				<i class="fas fa-unlink"></i>
+			</span>
+		</div>
+	</div>
+</div>
+
+<div id="playing-container" class="container-fluid" style="display: none">
+    <div id="playing-details-container" class="row bg-light p-3">    
+		<div class="col-8 col-md-3 mx-auto">
+			<img id='now-playing-image' width='100%'/>
+		</div>
+		
+		<div class="col-12 col-md-9">
+		
+			<div>
+				<h3><span id='now-playing-title'></span></h3>
+				<h5><span id='now-playing-artist' class='artist'></span><h5>
+			</div>
+			
+			
+			<div id="voting-container" class="mt-3 mb-3" style="display: none">
+				<div class="row">
+					<div class="col-12 text-center">
+						<label>Time left to vote:</label><br/>
+						<span id='vote-remaining' class='countdown'></span>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-6 text-center">
+						<button id="skip" class="btn btn-secondary btn-lg vote">Skip</button>
+						<br />Votes: <span id="skip-votes">
+					</div>
+					<div class="col-6 text-center">
+						<button id="keep" class="btn btn-secondary btn-lg vote">Keep</button>
+						<br />Votes: <span id="keep-votes">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12 mt-3">
+						<div class="progress">
+						  <div class="progress-bar progress-bar-striped progress-bar-animated" 
+						  role="progressbar" id="voting-progress"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="no-voting-container" style="display: none">
+				<h2 class="text-center">Time is up for voting!</h2>
+				<p class="text-center">Please wait until the next track starts...</p>
+			</div>
+			
+			<div class="text-right">
+				<label>Next track in:</label> <span id='now-playing-remaining' class='countdown'></span>
+			</div>
+			
+
+		</div>
+	</div>
+	
+</div>
+
+<div id="nothing-playing-container">
+	<h2>There is nothing playing</h2>
+
+	<p>Make sure you have authenticated properly. Or play something.</p>
+</div>
+
+
+
+{% endblock %}

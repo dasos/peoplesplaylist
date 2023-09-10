@@ -1,0 +1,9 @@
+eventlet
+Flask-SocketIO
+
+#codetiming
+pytest
+pytest-cov
+flake8
+black
+spotipy 
