@@ -69,6 +69,8 @@ def index():
 def get_auth_manager():
     global cache_path, redirect_uri
 
+    logger = logging.getLogger("peoplesplaylist.get_auth_manager")
+
     if has_request_context():
         cache_path = current_app.config.get("SPOTIPY_CACHE")
         redirect_uri = url_for("spotify.index", _external=True)
@@ -76,11 +78,13 @@ def get_auth_manager():
     # We can't continue without a cache_path
     # We'll need to wait for someone to hit the login page
     if cache_path is None:
+        logger.debug("No cache_path, cannot continue")
         return None
 
     # Work around containers mounting directories, not files
     if os.path.isdir(cache_path):
         cache_path = os.path.join(cache_path, "cache_file")
+        logger.debug(f"Adjusted cache path to be {cache_path}")
 
     # Spotify is being authenticated and the token is stored globally, in a file
     # This prevents being reauthed every time the app is started
