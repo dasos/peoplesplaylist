@@ -49,6 +49,9 @@ $(document).ready(function() {
 		$('#now-playing-remaining').text(Math.round(msg.track_remaining / 1000)).data("playing", msg.is_playing);
 		$('#vote-remaining').text(Math.round(msg.voting_remaining / 1000)).data("playing", msg.is_playing);
 		
+		$('#playlist').attr('href', msg.playlist.uri).text(msg.playlist.name)
+		$('.playlist').toggle(!!msg.playlist.name)
+		
 		$('#playing-container').toggle(!!msg.is_playing);
 		$('#nothing-playing-container').toggle(!msg.is_playing);
 		

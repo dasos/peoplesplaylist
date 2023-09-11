@@ -118,22 +118,31 @@ def get_current_track():
     if spotify is None:
         return INVALID_TRACK
 
-    data = spotify.current_user_playing_track()
-    if data is None:
+    t = spotify.current_user_playing_track()
+    if t is None:
         logger.debug("Not playing")
         return INVALID_TRACK
 
-    logger.log(5, data)  # Lower than debug :)
+    logger.log(5, t)  # Lower than debug :)
+    
+    p = {}
+    if (t['context']['type'] == 'playlist'):
+      p = spotify.playlist(t['context']['uri'], fields='collaborative,external_urls,name')
 
     return {
-        "artist": ", ".join([str(x["name"]) for x in data["item"]["artists"]]),
-        "title": data["item"]["name"],
-        "duration": data["item"]["duration_ms"],
-        "track_remaining": max(0, data["item"]["duration_ms"] - data["progress_ms"]),
-        "voting_remaining": max(0, (VOTE_TIME * 1000 - data["progress_ms"])),
-        "progress": data["progress_ms"],
-        "is_playing": data["is_playing"],
-        "image_url": data["item"]["album"]["images"][0]["url"],
+        "artist": ", ".join([str(x["name"]) for x in t["item"]["artists"]]),
+        "title": t["item"]["name"],
+        "duration": t["item"]["duration_ms"],
+        "track_remaining": max(0, t["item"]["duration_ms"] - t["progress_ms"]),
+        "voting_remaining": max(0, (VOTE_TIME * 1000 - t["progress_ms"])),
+        "progress": t["progress_ms"],
+        "is_playing": t["is_playing"],
+        "image_url": t["item"]["album"]["images"][0]["url"],
+        "playlist": {
+            'collaborative': p.get('collaborative'),
+            'uri': p.get('external_urls', {}).get('spotify'),
+            'name': p.get('name')
+        },
         "valid": True,
     }
 
