@@ -60,6 +60,7 @@ def watcher():
                 logger.debug("Nothing playing")
         else:
             logger.debug(f"All good. Number of track threads: {track_thread}")
+            logger.debug(f"This is the current playing track: {track_data}")
 
         socketio.sleep(30)
 
@@ -129,12 +130,14 @@ def wait_for_new_track(timer):
     socketio.sleep(timer)
     logger.debug("New track timer awake")
     # It could be a new track right now (or it could be the end of 30 secs)
-    # If it is a new track, we want to reset votes anyway, and we'll end up starting the timer for the votes
+    # If it is a new track, we want to reset votes anyway, and we'll end up
+    # starting the timer for the votes
 
     track_data = spotify.get_current_track()
     socketio.emit("now-playing", track_data)
 
-    # This will probably be right at the end of the song, and the next one hasn't actually quite started yet
+    # This will probably be right at the end of the song, and the next one hasn't
+    # actually quite started yet
     if track_data["voting_remaining"] > 25000 or track_data["track_remaining"] < 5000:
         logger.debug("Track thread ended, new track detected")
 

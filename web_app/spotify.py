@@ -42,13 +42,19 @@ def index():
         # Step 1. Display sign in link when no token
         auth_url = auth_manager.get_authorize_url()
 
-        return f'<h2><a href="{auth_url}">Sign in</a></h2><p>Remember, {redirect_uri} must be in the Spotify app settings'
+        return (
+            f'<h2><a href="{auth_url}">Sign in</a></h2>'
+            f"<p>Remember, {redirect_uri} must be in the Spotify app settings"
+        )
 
     # Step 3. Signed in, display data
     logging.debug("Signed in OK")
     spotify = spotipy.Spotify(auth_manager=auth_manager)
     logger.log(5, f"Spotify data: {spotify.me()}")  # Lower than debug :)
-    return f'<h2>Hi {spotify.me()["display_name"]}! </h2> Now playing: {spotify.current_user_playing_track()}'
+    return (
+        f'<h2>Hi {spotify.me()["display_name"]}!'
+        f"</h2> Now playing: {spotify.current_user_playing_track()}"
+    )
 
 
 def get_spotify():
@@ -61,14 +67,14 @@ def get_spotify():
 
     auth_manager = spotipy.oauth2.SpotifyOAuth()
     try:
-      if not auth_manager.validate_token(cache_handler.get_cached_token()):
-          logger.debug("Not logged in")
-          return None
+        if not auth_manager.validate_token(cache_handler.get_cached_token()):
+            logger.warning("Not logged in")
+            return None
     except Exception as e:
-      logger.error("Exception when trying to auth")
-      logger.error(e)
-      return None
-      
+        logger.error("Exception when trying to auth")
+        logger.error(e)
+        return None
+
     spotify = spotipy.Spotify(auth_manager=auth_manager)
 
     return spotify

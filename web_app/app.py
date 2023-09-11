@@ -2,11 +2,15 @@ import logging
 from flask import Flask
 from flask_socketio import SocketIO
 
+import ui
+import spotify
+
+
 socketio = SocketIO(async_mode="eventlet")
 
+from events import *  # noqa: F401,E402,F403
 
-from events import *
-import ui, spotify
+# Because we need to reimport the decorated functions for it to work
 
 
 def create_app():
@@ -24,7 +28,7 @@ def create_app():
     #    app.config.from_pyfile("../default_config_dev.py")
 
     # Pull in the env variables again, to overwrite anything here
-    # app.config.from_prefixed_env()
+    app.config.from_prefixed_env()
 
     # Get url_for working behind SSL
     from werkzeug.middleware.proxy_fix import ProxyFix
@@ -34,9 +38,10 @@ def create_app():
     # Set up some logging defaults based upon the config.
     # Keep the basic config at warn, so our libraries don't overwhelm us
     logging.basicConfig(level="WARN")
-    logging.getLogger("peoplesplaylist").setLevel(app.config.get("DEBUG_LEVEL"))
+    logger = logging.getLogger("peoplesplaylist")
+    logger.setLevel(app.config.get("LOG_LEVEL"))
 
-    print(app.config.get("DEBUG_LEVEL"))
+    logger.info(f"Current log level: {app.config.get('LOG_LEVEL')}")
 
     app.register_blueprint(ui.bp)
     app.register_blueprint(spotify.bp)
@@ -48,4 +53,7 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    socketio.run(app, log_output=True, host="0.0.0.0")
+    host = app.config.get("HOST")
+    port = app.config.get("PORT")
+    debug = app.config.get("DEBUG")
+    socketio.run(app, host=host, port=port, debug=False)
