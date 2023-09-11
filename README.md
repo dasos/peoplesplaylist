@@ -21,7 +21,7 @@ It used [flask-socketio](https://flask-socketio.readthedocs.io/) to allow for in
 
 ### Spotify
 
-You will need to register an app at [the Spotify developers site](https://developer.spotify.com/) Get the client id and client secret, specify a callback url (which will be something like https://<ip>/spotify) and pass them as environment variables.
+You will need to register an app at [the Spotify developers site](https://developer.spotify.com/) Get the client id and client secret, specify a callback url (which will be something like `https://<ip>/spotify`) and pass them as environment variables.
 
 ### Docker
 
@@ -29,7 +29,7 @@ The recommended way to deploy is via container. Take the Docker Compose file, mo
 
     docker-compose -f docker-compose.yml up
 
-It will then be available at port 5000 by default. If you are running it on your local machine, it is http://localhost:5000 Note it will run across the network by default.
+It will then be available at port 5000 by default. If you are running it on your local machine, it is `http://localhost:5000`. Note it will run across the network by default.
 
 ### Configuration
 You can see the (limited) number of configuration options in [default_config.py](default_config.py). To change the defaults, set an environment variable prefixed with `FLASK_` prefix.  For example, to set the debug level to DEBUG and get more logging, you would run `export FLASK_DEBUG_LEVEL=DEBUG`
