@@ -4,3 +4,4 @@ DEBUG = False
 LOG_LEVEL = "INFO"
 HOST = "0.0.0.0"
 PORT = "5000"
+SPOTIPY_CACHE = '/tmp/spotipy-cache'

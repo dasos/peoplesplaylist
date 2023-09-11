@@ -9,7 +9,6 @@ import spotify
 socketio = SocketIO(async_mode="eventlet")
 
 from events import *  # noqa: F401,E402,F403
-
 # Because we need to reimport the decorated functions for it to work
 
 
