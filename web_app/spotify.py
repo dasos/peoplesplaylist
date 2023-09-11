@@ -44,7 +44,6 @@ def index():
         # print(cache_handler.get_cached_token())
 
         logger.debug("Got access token, redirecting")
-        print(request.args.get("code"))
         return redirect("/spotify")
 
     if not auth_manager.validate_token(auth_manager.cache_handler.get_cached_token()):
