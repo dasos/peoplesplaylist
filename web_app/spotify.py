@@ -16,13 +16,10 @@ import os
 import json
 
 # These are global variables that we'll use when we are outside of a request context
-spotify = None
 cache_path = None
 redirect_uri = None
 
 bp = Blueprint("spotify", __name__, url_prefix="/spotify/")
-
-INVALID_TRACK = {"artist": "Bob Smith", "title": "Dance dance dance", "playlist": {}, "valid": False}
 
 VOTE_TIME = 30
 
@@ -43,7 +40,7 @@ def index():
         # Explicitly save the token. This shouldn't be necessary
         # cache_handler.save_token_to_cache(token)
 
-        spotify = spotipy.Spotify(auth_manager=auth_manager)
+        s = spotipy.Spotify(auth_manager=auth_manager)
 
         # print(cache_handler.get_cached_token())
 
@@ -62,12 +59,12 @@ def index():
 
     # Step 3. Signed in, display data
     logger.debug("Signed in OK")
-    spotify = spotipy.Spotify(auth_manager=auth_manager)
+    s = spotipy.Spotify(auth_manager=auth_manager)
     logger.debug(f"Spotify profile data: {spotify.me()}")
     return (
-        f'<h2>Hi {spotify.me()["display_name"]}!</h2>'
-        f"My profile: <pre>{json.dumps(spotify.me(), indent=2)}</pre>"        
-        f"Now playing: <pre>{json.dumps(spotify.current_user_playing_track(), indent=2)}"
+        f'<h2>Hi {s.me()["display_name"]}!</h2>'
+        f"My profile: <pre>{json.dumps(s.me(), indent=2)}</pre>"        
+        f"Now playing: <pre>{json.dumps(s.current_user_playing_track(), indent=2)}"
     )
 
 
@@ -103,12 +100,8 @@ def get_auth_manager():
 
 
 def get_spotify():
-    global spotify
 
     logger = logging.getLogger("peoplesplaylist.get_spotify")
-
-    if spotify is not None:
-        return spotify
 
     auth_manager = get_auth_manager()
 
@@ -128,31 +121,33 @@ def get_spotify():
         logger.error(e)
         return None
 
-    spotify = spotipy.Spotify(auth_manager=auth_manager)
-
-    return spotify
+    return spotipy.Spotify(auth_manager=auth_manager)
 
 
 def get_current_track():
     logger = logging.getLogger("peoplesplaylist.current_track")
 
-    spotify = get_spotify()
+    s = get_spotify()
 
-    if spotify is None:
-        return INVALID_TRACK
+    if s is None:
+        return {"valid": False}
 
-    t = spotify.current_user_playing_track()
+    t = s.current_user_playing_track()
     if t is None:
         logger.debug("Not playing")
-        return INVALID_TRACK
+        return {"valid": False}
 
     logger.log(5, t)  # Lower than debug :)
 
     p = {}
     if t["context"]["type"] == "playlist":
-        p = spotify.playlist(
-            t["context"]["uri"], fields="collaborative,external_urls,name"
-        )
+        try:
+            p = s.playlist(
+                t["context"]["uri"], fields="collaborative,external_urls,name"
+            )
+        except SpotifyException as e:
+            logger.warning(f"Caught an exception when trying to get playlist information: {e}")
+            pass
 
     return {
         "artist": ", ".join([str(x["name"]) for x in t["item"]["artists"]]),
@@ -175,11 +170,11 @@ def get_current_track():
 def skip():
     logger = logging.getLogger("peoplesplaylist.skip")
 
-    spotify = get_spotify()
+    s = get_spotify()
 
-    if spotify is None:
-        return INVALID_TRACK
+    if s is None:
+        return {"valid": False}
 
     logger.info("Skipping track")
-    spotify.next_track()
+    s.next_track()
     return True
