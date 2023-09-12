@@ -21,7 +21,7 @@ redirect_uri = None
 
 bp = Blueprint("spotify", __name__, url_prefix="/spotify/")
 
-VOTE_TIME = 30
+VOTE_TIME = 45
 INVALID_TRACK = {
     "artist": "No-one",
     "title": "Something is broken...",
