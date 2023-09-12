@@ -42,7 +42,7 @@ def create_app():
     if root.handlers:
         for handler in root.handlers:
             root.removeHandler(handler)
-    logging.basicConfig(format='%(asctime)s %(message)s',level=logging.WARN)
+    logging.basicConfig(format='%(asctime)s %(levelname)-8s %(name)s %(message)s',level=logging.WARN)
     #logging.basicConfig(level="WARN")
     
     logger = logging.getLogger("peoplesplaylist")
