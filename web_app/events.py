@@ -3,6 +3,7 @@ import logging
 from threading import Lock
 from app import socketio
 from flask_socketio import emit
+import json
 
 import spotify
 
@@ -63,7 +64,8 @@ def watcher():
                     else:
                         logger.debug("Avoided making new threads!")
             else:
-                logger.debug("Nothing playing")
+                logger.debug("Nothing playing, resetting count")
+                count = 0
         else:
             logger.debug(f"All good. Number of track threads: {track_thread}")
             h, count = _check_reset(track_data, h, count)
@@ -82,16 +84,17 @@ def _check_reset(track_data, h, count):
 
     logger.debug(f"This is the current playing track: {track_data}")
 
-    if hash(track_data) == h:
+    new_hash = hash(json.dumps(track_data, sort_keys=True))
+
+    if new_hash == h:
         count = count + 1
-        logger.debug("hash matches")
+        logger.warning("Hash matches; may be stuck")
     if count > 5:
         track_thread = 0  # Lets reset!
         logger.info("Reset track thread. :(")
+        count = 0
 
-    h = hash(track_data)
-
-    return h, count
+    return new_hash, count
 
 
 # Runs when a new track is started. May also be called by the watcher
