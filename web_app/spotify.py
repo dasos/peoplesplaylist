@@ -13,6 +13,8 @@ import spotipy
 
 import os
 
+import json
+
 # These are global variables that we'll use when we are outside of a request context
 spotify = None
 cache_path = None
@@ -20,7 +22,7 @@ redirect_uri = None
 
 bp = Blueprint("spotify", __name__, url_prefix="/spotify/")
 
-INVALID_TRACK = {"artist": "Bob Smith", "title": "Dance dance dance", "valid": False}
+INVALID_TRACK = {"artist": "Bob Smith", "title": "Dance dance dance", "playlist": {}, "valid": False}
 
 VOTE_TIME = 30
 
@@ -63,8 +65,9 @@ def index():
     spotify = spotipy.Spotify(auth_manager=auth_manager)
     logger.debug(f"Spotify profile data: {spotify.me()}")
     return (
-        f'<h2>Hi {spotify.me()["display_name"]}!'
-        f"</h2> Now playing: {spotify.current_user_playing_track()}"
+        f'<h2>Hi {spotify.me()["display_name"]}!</h2>'
+        f"My profile: <pre>{json.dumps(spotify.me(), indent=2)}</pre>"        
+        f"Now playing: <pre>{json.dumps(spotify.current_user_playing_track(), indent=2)}"
     )
 
 
