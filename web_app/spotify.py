@@ -28,6 +28,8 @@ VOTE_TIME = 30
 @bp.route("/")
 def index():
     logger = logging.getLogger("peoplesplaylist.spotify")
+    
+    print(f'logger level: {logger.getEffectiveLevel}')
 
     auth_manager = get_auth_manager()
     logger.debug(f"Got auth_manager, uing cache file here: {auth_manager.cache_handler.cache_path}")

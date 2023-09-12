@@ -45,6 +45,9 @@ def watcher():
     global watcher_lock
 
     logger = logging.getLogger("peoplesplaylist.watcher")
+    
+    logger.info("Starting the watcher")
+    
     while True:
         logger.debug("Watcher is watching")
         if track_thread == 0:
@@ -67,7 +70,7 @@ def watcher():
 
 # Runs when a new track is started. May also be called by the watcher
 def new_track():
-    global thread_lock, count, NO_VOTES
+    global thread_lock, count
 
     logger = logging.getLogger("peoplesplaylist.wait_for_voting")
 
