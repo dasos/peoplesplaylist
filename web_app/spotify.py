@@ -84,12 +84,12 @@ def get_auth_manager():
         return None
 
     # Work around containers mounting directories, not files
-    cache_path = os.path.join(cache_path, "cache_file")
-    logger.debug(f"Adjusted cache path to be {cache_path}")
+    cache_file = os.path.join(cache_path, "cache_file")
+    logger.debug(f"Adjusted cache path to be {cache_file}")
 
     # Spotify is being authenticated and the token is stored globally, in a file
     # This prevents being reauthed every time the app is started
-    cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=cache_path)
+    cache_handler = spotipy.cache_handler.CacheFileHandler(cache_path=cache_file)
 
     return spotipy.oauth2.SpotifyOAuth(
         scope="user-read-currently-playing,user-modify-playback-state",
