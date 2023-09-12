@@ -60,7 +60,6 @@ $(document).ready(function() {
 			$('#voting-container').hide();
 			$('#no-voting-container').hide();
 		}
-		$('#nothing-playing-container').show()
 		
 	});
 	
