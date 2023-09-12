@@ -22,23 +22,37 @@ redirect_uri = None
 bp = Blueprint("spotify", __name__, url_prefix="/spotify/")
 
 VOTE_TIME = 30
+INVALID_TRACK = {
+    "artist": "No-one",
+    "title": "Something is broken...",
+    "playlist": {},
+    "valid": False,
+    "is_playing": False,
+}
 
 
 @bp.route("/")
 def index():
     logger = logging.getLogger("peoplesplaylist.spotify")
-    
-    print(f'logger level: {logger.getEffectiveLevel}')
 
-    auth_manager = get_auth_manager()
-    logger.debug(f"Got auth_manager, uing cache file here: {auth_manager.cache_handler.cache_path}")
+    try:
+        auth_manager = get_auth_manager()
+    except spotipy.oauth2.SpotifyOauthError as e:
+        logger.error(f"Spotify error: {e}")
+        return (
+            "<h2>Error</h2>"
+            "There was an error; make sure the client and secrets are set properly."
+            "View the logs for more."
+        )
+
+    logger.debug(
+        "Got auth_manager, uing cache file here:"
+        f"{auth_manager.cache_handler.cache_path}"
+    )
 
     if request.args.get("code"):
         # Step 2. Being redirected from Spotify auth page
-        token = auth_manager.get_access_token(request.args.get("code"))
-
-        # Explicitly save the token. This shouldn't be necessary
-        # cache_handler.save_token_to_cache(token)
+        auth_manager.get_access_token(request.args.get("code"))
 
         s = spotipy.Spotify(auth_manager=auth_manager)
 
@@ -54,16 +68,16 @@ def index():
 
         return (
             f'<h2><a href="{auth_url}">Sign in</a></h2>'
-            f"<p>Remember, {redirect_uri} must be in the Spotify app settings"
+            f"Remember, {redirect_uri} must be in the Spotify app settings"
         )
 
     # Step 3. Signed in, display data
     logger.debug("Signed in OK")
     s = spotipy.Spotify(auth_manager=auth_manager)
-    logger.debug(f"Spotify profile data: {spotify.me()}")
+    logger.debug(f"Spotify profile data: {s.me()}")
     return (
         f'<h2>Hi {s.me()["display_name"]}!</h2>'
-        f"My profile: <pre>{json.dumps(s.me(), indent=2)}</pre>"        
+        f"My profile: <pre>{json.dumps(s.me(), indent=2)}</pre>"
         f"Now playing: <pre>{json.dumps(s.current_user_playing_track(), indent=2)}"
     )
 
@@ -85,7 +99,6 @@ def get_auth_manager():
 
     # Work around containers mounting directories, not files
     cache_file = os.path.join(cache_path, "cache_file")
-    logger.debug(f"Adjusted cache path to be {cache_file}")
 
     # Spotify is being authenticated and the token is stored globally, in a file
     # This prevents being reauthed every time the app is started
@@ -100,7 +113,6 @@ def get_auth_manager():
 
 
 def get_spotify():
-
     logger = logging.getLogger("peoplesplaylist.get_spotify")
 
     auth_manager = get_auth_manager()
@@ -130,12 +142,12 @@ def get_current_track():
     s = get_spotify()
 
     if s is None:
-        return {"valid": False}
+        return INVALID_TRACK
 
     t = s.current_user_playing_track()
     if t is None:
         logger.debug("Not playing")
-        return {"valid": False}
+        return INVALID_TRACK
 
     logger.log(5, t)  # Lower than debug :)
 
@@ -145,8 +157,10 @@ def get_current_track():
             p = s.playlist(
                 t["context"]["uri"], fields="collaborative,external_urls,name"
             )
-        except SpotifyException as e:
-            logger.warning(f"Caught an exception when trying to get playlist information: {e}")
+        except spotipy.exceptions.SpotifyException as e:
+            logger.warning(
+                f"Caught an exception when trying to get playlist information: {e}"
+            )
             pass
 
     return {
@@ -173,7 +187,7 @@ def skip():
     s = get_spotify()
 
     if s is None:
-        return {"valid": False}
+        return INVALID_TRACK
 
     logger.info("Skipping track")
     s.next_track()

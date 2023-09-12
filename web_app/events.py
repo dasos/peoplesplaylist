@@ -42,15 +42,15 @@ def watcher():
     """Runs every 30 seconds. If there are no track threads AND
     something is playing, start a new track thread"""
 
-    global watcher_lock
+    global watcher_lock, track_thread
 
     logger = logging.getLogger("peoplesplaylist.watcher")
-    
+
     h = None
     count = 0
-    
+
     logger.info("Starting the watcher")
-    
+
     while True:
         logger.debug("Watcher is watching")
         track_data = spotify.get_current_track()
@@ -66,30 +66,33 @@ def watcher():
                 logger.debug("Nothing playing")
         else:
             logger.debug(f"All good. Number of track threads: {track_thread}")
-            h, count = check_reset(track_data, h, count)
-                
+            h, count = _check_reset(track_data, h, count)
 
         socketio.sleep(30)
+
 
 def _check_reset(track_data, h, count):
     """This is a hack. If a thread dies, we might not know about it.
     This will happen if there is an exception.
-    If there are not enough track changes in a short amount of time, track thread is reset"""
-    
+    If there are not enough track changes in a short amount of time,
+    track thread is reset"""
+    global track_thread
+
     logger = logging.getLogger("peoplesplaylist.set")
-    
+
     logger.debug(f"This is the current playing track: {track_data}")
-    
+
     if hash(track_data) == h:
         count = count + 1
         logger.debug("hash matches")
     if count > 5:
-        track_thread = 0 # Lets reset!
+        track_thread = 0  # Lets reset!
         logger.info("Reset track thread. :(")
-    
+
     h = hash(track_data)
-    
+
     return h, count
+
 
 # Runs when a new track is started. May also be called by the watcher
 def new_track():

@@ -54,12 +54,13 @@ $(document).ready(function() {
 		
 		$('#playing-container').toggle(!!msg.is_playing);
 		$('#nothing-playing-container').toggle(!msg.is_playing);
+		console.log(msg.is_playing)
 		
 		if (!msg.is_playing) {
 			$('#voting-container').hide();
 			$('#no-voting-container').hide();
 		}
-		
+		$('#nothing-playing-container').show()
 		
 	});
 	
