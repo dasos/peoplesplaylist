@@ -27,10 +27,10 @@ VOTE_TIME = 30
 
 @bp.route("/")
 def index():
-    logger = logging.getLogger("peoplesplaylist.current_track")
+    logger = logging.getLogger("peoplesplaylist.spotify")
 
     auth_manager = get_auth_manager()
-    logger.debug("Got auth_manager, cache_handler")
+    logger.debug(f"Got auth_manager, uing cache file here: {auth_manager.cache_handler.cache_path}")
 
     if request.args.get("code"):
         # Step 2. Being redirected from Spotify auth page
@@ -82,9 +82,8 @@ def get_auth_manager():
         return None
 
     # Work around containers mounting directories, not files
-    if os.path.isdir(cache_path):
-        cache_path = os.path.join(cache_path, "cache_file")
-        logger.debug(f"Adjusted cache path to be {cache_path}")
+    cache_path = os.path.join(cache_path, "cache_file")
+    logger.debug(f"Adjusted cache path to be {cache_path}")
 
     # Spotify is being authenticated and the token is stored globally, in a file
     # This prevents being reauthed every time the app is started
@@ -169,7 +168,7 @@ def get_current_track():
 
 
 def skip():
-    logger = logging.getLogger("peoplesplaylist.current_track")
+    logger = logging.getLogger("peoplesplaylist.skip")
 
     spotify = get_spotify()
 
